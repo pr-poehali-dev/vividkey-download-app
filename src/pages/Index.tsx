@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,16 +7,39 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
+const API_URL = 'https://functions.poehali.dev/4d3437d0-0e83-4951-821f-c05fdf45f7cb';
+
 const Index = () => {
-  const [htmlCode, setHtmlCode] = useState('<!DOCTYPE html>\n<html>\n<head>\n  <title>Пример HTML</title>\n</head>\n<body>\n  <h1>Привет, мир!</h1>\n  <p>Это пример HTML файла.</p>\n</body>\n</html>');
+  const [htmlCode, setHtmlCode] = useState('');
   const [activeTab, setActiveTab] = useState('home');
+  const [currentFile, setCurrentFile] = useState<any>(null);
+
+  useEffect(() => {
+    loadFiles();
+  }, []);
+
+  const loadFiles = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      if (data.files && data.files.length > 0) {
+        const firstFile = data.files[0];
+        setCurrentFile(firstFile);
+        setHtmlCode(firstFile.content);
+      } else {
+        setHtmlCode('<!DOCTYPE html>\n<html>\n<head>\n  <title>Пример HTML</title>\n</head>\n<body>\n  <h1>Привет, мир!</h1>\n  <p>Это пример HTML файла.</p>\n</body>\n</html>');
+      }
+    } catch (error) {
+      setHtmlCode('<!DOCTYPE html>\n<html>\n<head>\n  <title>Пример HTML</title>\n</head>\n<body>\n  <h1>Привет, мир!</h1>\n  <p>Это пример HTML файла.</p>\n</body>\n</html>');
+    }
+  };
 
   const handleDownload = () => {
     const blob = new Blob([htmlCode], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'vividkey-file.html';
+    a.download = currentFile ? currentFile.filename : 'vividkey-file.html';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -367,6 +390,18 @@ const Index = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        <Icon name="Mail" size={16} className="inline mr-1 text-purple-600" />
+                        Электронная почта для связи:
+                      </p>
+                      <a 
+                        href="mailto:vividkey@yandex.ru" 
+                        className="text-purple-600 font-bold text-lg hover:text-purple-700 transition-colors"
+                      >
+                        vividkey@yandex.ru
+                      </a>
+                    </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Ваше сообщение</label>
                       <Textarea

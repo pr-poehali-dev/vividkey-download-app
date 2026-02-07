@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "Get all files",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "files": []
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create file with valid password",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "password": "stepan12",
+        "filename": "test.html",
+        "content": "<html><body>Test</body></html>"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
